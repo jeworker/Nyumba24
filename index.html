@@ -22,7 +22,7 @@ main{padding:55px max(5vw,22px)}.section-head{display:flex;justify-content:space
 .empty{grid-column:1/-1;text-align:center;padding:50px;color:var(--muted);background:#fff;border-radius:16px}
 .cta{margin:10px max(5vw,22px) 60px;padding:35px 40px;border-radius:24px;background:var(--ink);color:white;display:flex;justify-content:space-between;align-items:center;gap:25px}.cta h2{margin:0 0 8px;font-size:28px}.cta p{margin:0;color:#c5d0c9}.cta .btn{background:var(--lime);color:var(--ink)}
 footer{padding:28px max(5vw,22px);background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--muted);font-size:13px}
-.modal{display:none;position:fixed;inset:0;background:#101b17a8;z-index:10;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.modal-box{background:white;border-radius:20px;padding:25px;width:min(100%,480px);max-height:90vh;overflow:auto}.modal-box h2{margin-top:0}.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.modal-grid .wide{grid-column:1/-1}.close{float:right;border:0;background:#edf2ed;border-radius:50%;width:32px;height:32px;cursor:pointer}
+.modal{display:none;position:fixed;inset:0;background:#101b17a8;z-index:10;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.modal-box{background:white;border-radius:20px;padding:25px;width:min(100%,480px);max-height:90vh;overflow:auto}.modal-box h2{margin-top:0}.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.modal-grid .wide{grid-column:1/-1}.photo-upload{border:1.5px dashed #b9c9bd;border-radius:12px;padding:14px;background:#f8fbf8}.photo-upload input{padding:10px;background:white}.photo-help{font-size:12px;color:var(--muted);margin:7px 0 0}.preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.preview-grid img{width:100%;height:90px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}.close{float:right;border:0;background:#edf2ed;border-radius:50%;width:32px;height:32px;cursor:pointer}
 @media(max-width:850px){.hero{grid-template-columns:1fr;padding-top:48px}.hero-art{height:230px}.searchbox{grid-template-columns:1fr 1fr}.grid{grid-template-columns:repeat(2,1fr)}nav{gap:13px}nav a:not(.btn){display:none}}
 @media(max-width:560px){header{height:66px}.logo{font-size:21px}.hero h1{font-size:42px}.searchbox{grid-template-columns:1fr;margin-top:-15px}.grid{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}.cta{padding:26px;align-items:start;flex-direction:column}footer{flex-direction:column;gap:10px}.modal-grid{grid-template-columns:1fr}.modal-grid .wide{grid-column:auto}}
 </style>
@@ -47,55 +47,90 @@ footer{padding:28px max(5vw,22px);background:#fff;border-top:1px solid var(--lin
 </main>
 <section class="cta" id="jinsi"><div><h2>Una nyumba ya kupangisha?</h2><p>Weka tangazo lako na uwafikie wapangaji wengi zaidi.</p></div><button class="btn" onclick="openModal()">Tangaza nyumba yako +</button></section>
 <footer><strong>NYUMBA24</strong><span>© 2026 Nyumba24 Tanzania · Tafuta nyumba kwa urahisi</span><span>Dar es Salaam pekee, Tanzania</span></footer>
-<div class="modal" id="detailModal"><div class="modal-box"><button class="close" onclick="closeDetail()">✕</button><div id="detailContent"></div></div></div><div class="modal" id="modal"><div class="modal-box"><button class="close" onclick="closeModal()">✕</button><h2>Weka tangazo la nyumba</h2><p style="color:var(--muted);font-size:13px">Jaza taarifa za nyumba. Tangazo litaingia kwenye ukaguzi kabla halijaonekana kwa umma.</p>
+<div class="modal" id="detailModal"><div class="modal-box"><button class="close" onclick="closeDetail()">✕</button><div id="detailContent"></div></div></div><div class="modal" id="modal"><div class="modal-box"><button class="close" onclick="closeModal()">✕</button><h2>Weka tangazo la nyumba</h2><p style="color:var(--muted);font-size:13px">Jaza taarifa za nyumba na picha. Baada ya kutuma, tangazo litaonekana kwa umma.</p>
+<div class="photo-upload" style="margin:12px 0 18px">
+<strong>Akaunti ya mwenye nyumba</strong>
+<p class="photo-help">Ingia au fungua akaunti ili kuhifadhi tangazo na kupakia picha.</p>
+<div class="modal-grid" style="margin-top:10px">
+<div class="field wide"><label barua pepe</label><input id="ownerEmail" type="email" autocomplete="email" placeholder="Barua pepe yako"></div>
+<div class="field wide"><label>Nenosiri</label><input id="ownerPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Angalau herufi 6"></div>
+<div class="field"><button type="button" class="btn" style="width:100%" onclick="ownerSignIn()">Ingia</button></div>
+<div class="field"><button type="button" class="chip" style="width:100%;height:100%" onclick="ownerSignUp()">Fungua akaunti</button></div>
+<div class="field wide"><button type="button" class="chip" onclick="ownerSignOut()">Toka kwenye akaunti</button><p id="authStatus" class="photo-help">Hujaingia bado.</p></div>
+</div></div>
 <form id="listingForm" class="modal-grid">
 <div class="field wide"><label>Jina la nyumba / kichwa</label><input required placeholder="Mf. Apartment nzuri Mbezi"></div>
 <div class="field"><label>Mkoa</label><input required value="Dar es Salaam" readonly></div><div class="field"><label>Wilaya / eneo</label><input required placeholder="Mbezi Beach"></div>
 <div class="field"><label>Aina ya nyumba</label><select><option>Nyumba nzima</option><option>Apartment</option><option>Chumba</option><option>Studio</option></select></div><div class="field"><label>Bei kwa mwezi (TSh)</label><input type="number" required placeholder="500000"></div>
 <div class="field"><label>Vyumba vya kulala</label><input type="number" min="0" max="30" placeholder="2"></div><div class="field"><label>Mabafu</label><input id="bathrooms" type="number" min="0" max="30" placeholder="1"></div><div class="field wide"><label>Simu / WhatsApp</label><input required placeholder="07XXXXXXXX au 2557XXXXXXXX"></div>
-<div class="field wide"><label>Maelezo</label><input id="desc" placeholder="Eleza huduma na hali ya nyumba"></div><div class="field wide"><label>Kiungo cha picha ya nyumba (hiari)</label><input id="photoUrl" type="url" placeholder="https://..."></div>
+<div class="field wide"><label>Maelezo</label><input id="desc" placeholder="Eleza huduma na hali ya nyumba"></div>
+<div class="field wide"><label>Picha za nyumba</label><div class="photo-upload"><input id="propertyPhotos" type="file" accept="image/jpeg,image/png,image/webp" multiple><p class="photo-help">Chagua hadi picha 6 (JPG, PNG au WebP). Kila picha isiwe zaidi ya MB 5.</p><div id="photoPreview" class="preview-grid"></div></div></div>
+<div class="field wide"><label>Au kiungo cha picha (hiari)</label><input id="photoUrl" type="url" placeholder="https://..."></div>
 <div class="wide"><button id="submitListing" class="btn" style="width:100%">Tuma tangazo kwa ukaguzi</button></div>
 </form></div></div>
 <script>
 const CONFIG=window.NYUMBA24_CONFIG||{};
-const hasConfig=CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && !CONFIG.SUPABASE_URL.includes('YOUR-PROJECT') && !CONFIG.SUPABASE_ANON_KEY.includes('PASTE_');
+const hasConfig=!!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && !CONFIG.SUPABASE_ANON_KEY.includes('WEKA_PUBLISHABLE'));
 const supabaseClient=(hasConfig && window.supabase)?window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY):null;
-let homes=[]; let activeType='';
+const PHOTO_BUCKET='nyumba24-photos';
+let homes=[];let activeType='';let currentUser=null;
 const money=n=>'TSh '+Number(n||0).toLocaleString('en-US');
 const escapeHTML=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function setStatus(message,isError=false){const el=document.getElementById('dbStatus');el.textContent=message;el.style.color=isError?'#b42318':'#68756f'}
-function mapRow(row){return {id:row.id,title:row.title,area:row.area+', Dar es Salaam',type:row.property_type,price:row.monthly_rent,rooms:row.bedrooms,baths:row.bathrooms,img:row.photo_url||'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80',description:row.description||'',phone:row.contact_phone}}
+function setAuthStatus(message,isError=false){const el=document.getElementById('authStatus');if(el){el.textContent=message;el.style.color=isError?'#b42318':'#146b4b'}}
+async function refreshSession(){if(!supabaseClient)return;const {data}=await supabaseClient.auth.getSession();currentUser=data.session?.user||null;setAuthStatus(currentUser?'Umeingia: '+currentUser.email:'Hujaingia bado. Ingia au fungua akaunti.');}
+async function ownerSignUp(){
+ if(!supabaseClient){alert('Kwanza weka Publishable Key kwenye config.js.');return}
+ const email=document.getElementById('ownerEmail').value.trim(),password=document.getElementById('ownerPassword').value;
+ if(!email||password.length<6){setAuthStatus('Weka barua pepe na nenosiri la angalau herufi 6.',true);return}
+ const {data,error}=await supabaseClient.auth.signUp({email,password});
+ if(error){setAuthStatus(error.message,true);return}
+ currentUser=data.session?.user||null;
+ if(currentUser){setAuthStatus('Akaunti imetengenezwa na umeingia: '+currentUser.email)}
+ else{setAuthStatus('Akaunti imetengenezwa. Angalia email uthibitishe akaunti, kisha ingia.')}
+}
+async function ownerSignIn(){
+ if(!supabaseClient){alert('Kwanza weka Publishable Key kwenye config.js.');return}
+ const email=document.getElementById('ownerEmail').value.trim(),password=document.getElementById('ownerPassword').value;
+ const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+ if(error){setAuthStatus(error.message,true);return}
+ currentUser=data.user;setAuthStatus('Umeingia: '+currentUser.email);
+}
+async function ownerSignOut(){if(!supabaseClient)return;await supabaseClient.auth.signOut();currentUser=null;setAuthStatus('Umetoka kwenye akaunti.')}
+function mapRow(row){const photos=row.photo_urls||row.image_urls||[];return {id:row.id,title:row.title,area:row.area+', Dar es Salaam',type:row.property_type,price:row.monthly_rent,rooms:row.bedrooms,baths:row.bathrooms||0,img:row.photo_url||photos[0]||'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80',photos,description:row.description||'',phone:row.contact_phone||row.phone||''}}
 async function loadHomes(){
- if(!supabaseClient){homes=[];render([]);setStatus('Database haijawekwa bado. Jaza Project URL na Anon/Publishable Key ndani ya config.js.',true);return}
+ if(!supabaseClient){homes=[];render([]);setStatus('Database haijaunganishwa. Weka Supabase Publishable Key kwenye config.js.',true);return}
  setStatus('Inaunganisha na database...');
- const {data,error}=await supabaseClient.from('properties').select('id,title,area,property_type,monthly_rent,bedrooms,bathrooms,contact_phone,description,photo_url,created_at').eq('status','approved').order('created_at',{ascending:false});
+ const {data,error}=await supabaseClient.from('properties').select('id,title,area,property_type,monthly_rent,bedrooms,bathrooms,contact_phone,phone,description,photo_url,photo_urls,image_urls,created_at').eq('status','approved').order('created_at',{ascending:false});
  if(error){homes=[];render([]);setStatus('Imeshindikana kusoma matangazo: '+error.message,true);return}
- homes=(data||[]).map(mapRow);filterHomes();setStatus('Database imeunganishwa. Matangazo yaliyoidhinishwa: '+homes.length);
+ homes=(data||[]).map(mapRow);filterHomes();setStatus('Database imeunganishwa. Matangazo ya umma: '+homes.length);
 }
 function render(list){
  document.getElementById('count').textContent='Matangazo '+list.length;
- document.getElementById('homes').innerHTML=list.length?list.map(h=>`<article class="card"><div class="photo"><img src="${escapeHTML(h.img)}" alt="${escapeHTML(h.title)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80'"><span class="tag">${escapeHTML(h.type)}</span><button class="heart" aria-label="Hifadhi unayoipenda" onclick="this.textContent=this.textContent==='♡'?'♥':'♡'">♡</button></div><div class="details"><h3>${escapeHTML(h.title)}</h3><div class="location">⌖ ${escapeHTML(h.area)}</div><div class="specs"><span>🛏 ${h.rooms} vyumba</span><span>🚿 ${h.baths} bafu</span><span>📅 Kwa mwezi</span></div><div class="price-row"><div class="price">${money(h.price)}<small> / mwezi</small></div><button class="contact" onclick="showDetail('${String(h.id).replace(/'/g,'')}')">Tazama zaidi</button></div></div></article>`).join(''):'<div class="empty">Bado hakuna tangazo lililoidhinishwa. Rudi tena baadaye au tuma tangazo lako ili likaguliwe.</div>';
+ document.getElementById('homes').innerHTML=list.length?list.map(h=>`<article class="card"><div class="photo"><img src="${escapeHTML(h.img)}" alt="${escapeHTML(h.title)}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80'"><span class="tag">${escapeHTML(h.type)}</span><button class="heart" aria-label="Hifadhi unayoipenda" onclick="this.textContent=this.textContent==='♡'?'♥':'♡'">♡</button></div><div class="details"><h3>${escapeHTML(h.title)}</h3><div class="location">⌖ ${escapeHTML(h.area)}</div><div class="specs"><span>🛏 ${h.rooms} vyumba</span><span>🚿 ${h.baths} bafu</span><span>📅 Kwa mwezi</span></div><div class="price-row"><div class="price">${money(h.price)}<small> / mwezi</small></div><button class="contact" onclick="showDetail('${String(h.id).replace(/'/g,'')}')">Tazama zaidi</button></div></div></article>`).join(''):'<div class="empty">Bado hakuna nyumba zilizochapishwa. Matangazo mapya yataonekana hapa baada ya kutumwa.</div>';
 }
 function filterHomes(){let q=document.getElementById('q').value.toLowerCase().trim(),t=document.getElementById('type').value||activeType,b=Number(document.getElementById('budget').value)||Infinity;let list=homes.filter(h=>(!q||h.area.toLowerCase().includes(q)||h.title.toLowerCase().includes(q))&&(!t||h.type===t)&&h.price<=b);let sort=document.getElementById('sort')?.value;if(sort==='low')list.sort((a,b)=>a.price-b.price);if(sort==='high')list.sort((a,b)=>b.price-a.price);render(list)}
 function quickFilter(t,el){activeType=t;document.querySelectorAll('.filters .chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');filterHomes()}
 function clearFilters(){document.getElementById('q').value='';document.getElementById('type').value='';document.getElementById('budget').value='';document.getElementById('sort').value='featured';activeType='';document.querySelectorAll('.filters .chip').forEach((x,i)=>x.classList.toggle('active',i===0));filterHomes()}
-function showDetail(id){const h=homes.find(x=>String(x.id)===String(id));if(!h)return;const wa=h.phone.replace(/\D/g,'').replace(/^0/,'255');document.getElementById('detailContent').innerHTML=`<img src="${escapeHTML(h.img)}" style="width:100%;height:220px;object-fit:cover;border-radius:13px" alt="${escapeHTML(h.title)}"><div class="eyebrow" style="margin-top:18px">${escapeHTML(h.type)}</div><h2 style="margin:8px 0">${escapeHTML(h.title)}</h2><p style="color:var(--muted)">⌖ ${escapeHTML(h.area)}</p><h2 style="color:var(--green)">${money(h.price)} <small style="font-size:13px;color:var(--muted)">/ mwezi</small></h2><p>Vyumba: ${h.rooms} · Mabafu: ${h.baths}</p><p>${escapeHTML(h.description)}</p><p style="color:var(--muted);font-size:13px">Thibitisha upatikanaji, masharti ya kodi na utambulisho wa mwenye nyumba kabla ya kufanya malipo.</p><a class="btn" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('Habari, nimeona tangazo lako kwenye NYUMBA24: '+h.title)}">Wasiliana WhatsApp</a>`;document.getElementById('detailModal').classList.add('show')}
+function showDetail(id){const h=homes.find(x=>String(x.id)===String(id));if(!h)return;const wa=h.phone.replace(/\D/g,'').replace(/^0/,'255');document.getElementById('detailContent').innerHTML=`<div class="preview-grid" style="grid-template-columns:1fr;">${(h.photos.length?h.photos:[h.img]).map(url=>`<img src="${escapeHTML(url)}" style="width:100%;height:220px;object-fit:cover;border-radius:13px" alt="Picha ya nyumba">`).join('')}</div><div class="eyebrow" style="margin-top:18px">${escapeHTML(h.type)}</div><h2 style="margin:8px 0">${escapeHTML(h.title)}</h2><p style="color:var(--muted)">⌖ ${escapeHTML(h.area)}</p><h2 style="color:var(--green)">${money(h.price)} <small style="font-size:13px;color:var(--muted)">/ mwezi</small></h2><p>Vyumba: ${h.rooms} · Mabafu: ${h.baths}</p><p>${escapeHTML(h.description)}</p><p style="color:var(--muted);font-size:13px">Thibitisha upatikanaji na masharti ya kodi kabla ya kufanya malipo.</p><a class="btn" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('Habari, nimeona tangazo lako kwenye NYUMBA24: '+h.title)}">Wasiliana WhatsApp</a>`;document.getElementById('detailModal').classList.add('show')}
 function closeDetail(){document.getElementById('detailModal').classList.remove('show')}
 function openModal(){document.getElementById('modal').classList.add('show')}function closeModal(){document.getElementById('modal').classList.remove('show')}
+const photoInput=document.getElementById('propertyPhotos');
+photoInput.addEventListener('change',()=>{const files=[...photoInput.files];if(files.length>6){alert('Chagua picha zisizozidi 6.');photoInput.value='';document.getElementById('photoPreview').innerHTML='';return}if(files.some(f=>!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>5*1024*1024)){alert('Tumia JPG, PNG au WebP; kila picha iwe chini ya MB 5.');photoInput.value='';document.getElementById('photoPreview').innerHTML='';return}document.getElementById('photoPreview').innerHTML=files.map(f=>`<img src="${URL.createObjectURL(f)}" alt="Picha ya nyumba">`).join('')});
+async function uploadPropertyPhotos(files,userId){const urls=[];for(const file of files){const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');const path=`${userId}/${crypto.randomUUID()}.${ext||'jpg'}`;const {error}=await supabaseClient.storage.from(PHOTO_BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});if(error)throw error;const {data}=supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path);urls.push(data.publicUrl)}return urls}
 document.getElementById('listingForm').addEventListener('submit',async e=>{
- e.preventDefault();if(!supabaseClient){alert('Database haijaunganishwa. Kwanza weka Project URL na Anon/Publishable Key kwenye config.js.');return}
- const f=e.target,vals=[...f.querySelectorAll('input,select')];
- const title=vals[0].value.trim(),region=vals[1].value.trim(),area=vals[2].value.trim(),type=vals[3].value,price=Number(vals[4].value),rooms=Number(vals[5].value)||0,phone=vals[7].value.trim(),baths=Number(document.getElementById('bathrooms').value)||0,desc=document.getElementById('desc').value.trim(),photo=document.getElementById('photoUrl').value.trim();
- if(!/dar es salaam/i.test(region)){alert('Kwa sasa tunapokea matangazo ya Dar es Salaam pekee.');return}
- if(!/^((\+?255)|0)\d{9}$/.test(phone.replace(/\s/g,''))){alert('Weka namba sahihi ya Tanzania, mfano 07XXXXXXXX au 2557XXXXXXXX.');return}
- if(price<=0||!area||title.length<5){alert('Tafadhali hakiki jina, eneo na bei ya nyumba.');return}
- const btn=document.getElementById('submitListing');btn.disabled=true;btn.textContent='Inatuma...';
- const payload={title,region:'Dar es Salaam',area,property_type:type,monthly_rent:price,bedrooms:rooms,bathrooms:baths,contact_phone:phone,description:desc,photo_url:photo||null,status:'pending'};
- const {error}=await supabaseClient.from('properties').insert(payload);
- btn.disabled=false;btn.textContent='Tuma tangazo kwa ukaguzi';
- if(error){alert('Tangazo halijahifadhiwa: '+error.message);return}
- closeModal();f.reset();alert('Asante! Tangazo limehifadhiwa na linasubiri kuidhinishwa na msimamizi.');
- });
-loadHomes();
+ e.preventDefault();if(!supabaseClient){alert('Database haijaunganishwa. Weka Publishable Key kwenye config.js.');return}
+ await refreshSession();if(!currentUser){alert('Tafadhali ingia au fungua akaunti ya mwenye nyumba kwanza.');return}
+ const f=e.target;const title=f.querySelector('input[placeholder^="Mf."]').value.trim(),area=f.querySelector('input[placeholder="Mbezi Beach"]').value.trim(),type=f.querySelector('select').value,price=Number(f.querySelector('input[placeholder="500000"]').value),rooms=Number(f.querySelector('input[placeholder="2"]').value)||0,phone=f.querySelector('input[placeholder^="07"]').value.trim(),baths=Number(document.getElementById('bathrooms').value)||0,desc=document.getElementById('desc').value.trim(),photo=document.getElementById('photoUrl').value.trim(),photoFiles=[...photoInput.files];
+ if(!/^((\+?255)|0)\d{9}$/.test(phone.replace(/\s/g,''))){alert('Weka namba sahihi ya Tanzania, mfano 07XXXXXXXX au 2557XXXXXXXX.');return}if(price<=0||!area||title.length<5){alert('Hakiki jina, eneo na bei ya nyumba.');return}if(!photoFiles.length&&!photo){alert('Chagua angalau picha moja ya nyumba au weka kiungo cha picha.');return}
+ const btn=document.getElementById('submitListing');btn.disabled=true;btn.textContent='Inatuma...';let uploadedUrls=[];
+ try{uploadedUrls=await uploadPropertyPhotos(photoFiles,currentUser.id)}catch(err){btn.disabled=false;btn.textContent='Tuma tangazo kwa ukaguzi';alert('Picha hazijapakiwa: '+err.message+' Hakiki bucket na Storage policies.');return}
+ if(photo&&!uploadedUrls.length)uploadedUrls=[photo];const firstPhoto=uploadedUrls[0]||null;
+ const payload={title,region:'Dar es Salaam',area,property_type:type,monthly_rent:price,bedrooms:rooms,bathrooms:baths,phone,contact_phone:phone,description:desc,photo_url:firstPhoto,photo_urls:uploadedUrls,image_urls:uploadedUrls,owner_id:currentUser.id,status:'approved'};
+ const {error}=await supabaseClient.from('properties').insert(payload);btn.disabled=false;btn.textContent='Tuma tangazo kwa ukaguzi';
+ if(error){alert('Picha zimepakiwa lakini tangazo halijahifadhiwa: '+error.message);return}
+ closeModal();f.reset();document.getElementById('photoPreview').innerHTML='';await loadHomes();alert('Hongera! Tangazo na picha zake zimehifadhiwa. Zinaonekana kwa umma kwenye NYUMBA24.');
+});
+(async()=>{if(supabaseClient){await refreshSession();await loadHomes()}else{render([]);setStatus('Weka Supabase Publishable Key kwenye config.js ili kuunganisha database.',true)}})();
 </script>
 </body></html>
