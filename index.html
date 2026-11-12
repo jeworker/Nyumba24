@@ -48,16 +48,6 @@ footer{padding:28px max(5vw,22px);background:#fff;border-top:1px solid var(--lin
 <section class="cta" id="jinsi"><div><h2>Una nyumba ya kupangisha?</h2><p>Weka tangazo lako na uwafikie wapangaji wengi zaidi.</p></div><button class="btn" onclick="openModal()">Tangaza nyumba yako +</button></section>
 <footer><strong>NYUMBA24</strong><span>© 2026 Nyumba24 Tanzania · Tafuta nyumba kwa urahisi</span><span>Dar es Salaam pekee, Tanzania</span></footer>
 <div class="modal" id="detailModal"><div class="modal-box"><button class="close" onclick="closeDetail()">✕</button><div id="detailContent"></div></div></div><div class="modal" id="modal"><div class="modal-box"><button class="close" onclick="closeModal()">✕</button><h2>Weka tangazo la nyumba</h2><p style="color:var(--muted);font-size:13px">Jaza taarifa za nyumba na picha. Baada ya kutuma, tangazo litaonekana kwa umma.</p>
-<div class="photo-upload" style="margin:12px 0 18px">
-<strong>Akaunti ya mwenye nyumba</strong>
-<p class="photo-help">Ingia au fungua akaunti ili kuhifadhi tangazo na kupakia picha.</p>
-<div class="modal-grid" style="margin-top:10px">
-<div class="field wide"><label barua pepe</label><input id="ownerEmail" type="email" autocomplete="email" placeholder="Barua pepe yako"></div>
-<div class="field wide"><label>Nenosiri</label><input id="ownerPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Angalau herufi 6"></div>
-<div class="field"><button type="button" class="btn" style="width:100%" onclick="ownerSignIn()">Ingia</button></div>
-<div class="field"><button type="button" class="chip" style="width:100%;height:100%" onclick="ownerSignUp()">Fungua akaunti</button></div>
-<div class="field wide"><button type="button" class="chip" onclick="ownerSignOut()">Toka kwenye akaunti</button><p id="authStatus" class="photo-help">Hujaingia bado.</p></div>
-</div></div>
 <form id="listingForm" class="modal-grid">
 <div class="field wide"><label>Jina la nyumba / kichwa</label><input required placeholder="Mf. Apartment nzuri Mbezi"></div>
 <div class="field"><label>Mkoa</label><input required value="Dar es Salaam" readonly></div><div class="field"><label>Wilaya / eneo</label><input required placeholder="Mbezi Beach"></div>
@@ -73,30 +63,10 @@ const CONFIG=window.NYUMBA24_CONFIG||{};
 const hasConfig=!!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY && !CONFIG.SUPABASE_ANON_KEY.includes('WEKA_PUBLISHABLE'));
 const supabaseClient=(hasConfig && window.supabase)?window.supabase.createClient(CONFIG.SUPABASE_URL,CONFIG.SUPABASE_ANON_KEY):null;
 const PHOTO_BUCKET='nyumba24-photos';
-let homes=[];let activeType='';let currentUser=null;
+let homes=[];let activeType='';
 const money=n=>'TSh '+Number(n||0).toLocaleString('en-US');
 const escapeHTML=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function setStatus(message,isError=false){const el=document.getElementById('dbStatus');el.textContent=message;el.style.color=isError?'#b42318':'#68756f'}
-function setAuthStatus(message,isError=false){const el=document.getElementById('authStatus');if(el){el.textContent=message;el.style.color=isError?'#b42318':'#146b4b'}}
-async function refreshSession(){if(!supabaseClient)return;const {data}=await supabaseClient.auth.getSession();currentUser=data.session?.user||null;setAuthStatus(currentUser?'Umeingia: '+currentUser.email:'Hujaingia bado. Ingia au fungua akaunti.');}
-async function ownerSignUp(){
- if(!supabaseClient){alert('Kwanza weka Publishable Key kwenye config.js.');return}
- const email=document.getElementById('ownerEmail').value.trim(),password=document.getElementById('ownerPassword').value;
- if(!email||password.length<6){setAuthStatus('Weka barua pepe na nenosiri la angalau herufi 6.',true);return}
- const {data,error}=await supabaseClient.auth.signUp({email,password});
- if(error){setAuthStatus(error.message,true);return}
- currentUser=data.session?.user||null;
- if(currentUser){setAuthStatus('Akaunti imetengenezwa na umeingia: '+currentUser.email)}
- else{setAuthStatus('Akaunti imetengenezwa. Angalia email uthibitishe akaunti, kisha ingia.')}
-}
-async function ownerSignIn(){
- if(!supabaseClient){alert('Kwanza weka Publishable Key kwenye config.js.');return}
- const email=document.getElementById('ownerEmail').value.trim(),password=document.getElementById('ownerPassword').value;
- const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
- if(error){setAuthStatus(error.message,true);return}
- currentUser=data.user;setAuthStatus('Umeingia: '+currentUser.email);
-}
-async function ownerSignOut(){if(!supabaseClient)return;await supabaseClient.auth.signOut();currentUser=null;setAuthStatus('Umetoka kwenye akaunti.')}
 function mapRow(row){const photos=row.photo_urls||row.image_urls||[];return {id:row.id,title:row.title,area:row.area+', Dar es Salaam',type:row.property_type,price:row.monthly_rent,rooms:row.bedrooms,baths:row.bathrooms||0,img:row.photo_url||photos[0]||'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80',photos,description:row.description||'',phone:row.contact_phone||row.phone||''}}
 async function loadHomes(){
  if(!supabaseClient){homes=[];render([]);setStatus('Database haijaunganishwa. Weka Supabase Publishable Key kwenye config.js.',true);return}
@@ -117,20 +87,19 @@ function closeDetail(){document.getElementById('detailModal').classList.remove('
 function openModal(){document.getElementById('modal').classList.add('show')}function closeModal(){document.getElementById('modal').classList.remove('show')}
 const photoInput=document.getElementById('propertyPhotos');
 photoInput.addEventListener('change',()=>{const files=[...photoInput.files];if(files.length>6){alert('Chagua picha zisizozidi 6.');photoInput.value='';document.getElementById('photoPreview').innerHTML='';return}if(files.some(f=>!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>5*1024*1024)){alert('Tumia JPG, PNG au WebP; kila picha iwe chini ya MB 5.');photoInput.value='';document.getElementById('photoPreview').innerHTML='';return}document.getElementById('photoPreview').innerHTML=files.map(f=>`<img src="${URL.createObjectURL(f)}" alt="Picha ya nyumba">`).join('')});
-async function uploadPropertyPhotos(files,userId){const urls=[];for(const file of files){const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');const path=`${userId}/${crypto.randomUUID()}.${ext||'jpg'}`;const {error}=await supabaseClient.storage.from(PHOTO_BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});if(error)throw error;const {data}=supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path);urls.push(data.publicUrl)}return urls}
+async function uploadPropertyPhotos(files){const urls=[];for(const file of files){const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');const path=`public/${crypto.randomUUID()}.${ext||'jpg'}`;const {error}=await supabaseClient.storage.from(PHOTO_BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});if(error)throw error;const {data}=supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(path);urls.push(data.publicUrl)}return urls}
 document.getElementById('listingForm').addEventListener('submit',async e=>{
  e.preventDefault();if(!supabaseClient){alert('Database haijaunganishwa. Weka Publishable Key kwenye config.js.');return}
- await refreshSession();if(!currentUser){alert('Tafadhali ingia au fungua akaunti ya mwenye nyumba kwanza.');return}
  const f=e.target;const title=f.querySelector('input[placeholder^="Mf."]').value.trim(),area=f.querySelector('input[placeholder="Mbezi Beach"]').value.trim(),type=f.querySelector('select').value,price=Number(f.querySelector('input[placeholder="500000"]').value),rooms=Number(f.querySelector('input[placeholder="2"]').value)||0,phone=f.querySelector('input[placeholder^="07"]').value.trim(),baths=Number(document.getElementById('bathrooms').value)||0,desc=document.getElementById('desc').value.trim(),photo=document.getElementById('photoUrl').value.trim(),photoFiles=[...photoInput.files];
  if(!/^((\+?255)|0)\d{9}$/.test(phone.replace(/\s/g,''))){alert('Weka namba sahihi ya Tanzania, mfano 07XXXXXXXX au 2557XXXXXXXX.');return}if(price<=0||!area||title.length<5){alert('Hakiki jina, eneo na bei ya nyumba.');return}if(!photoFiles.length&&!photo){alert('Chagua angalau picha moja ya nyumba au weka kiungo cha picha.');return}
  const btn=document.getElementById('submitListing');btn.disabled=true;btn.textContent='Inatuma...';let uploadedUrls=[];
- try{uploadedUrls=await uploadPropertyPhotos(photoFiles,currentUser.id)}catch(err){btn.disabled=false;btn.textContent='Tuma tangazo kwa ukaguzi';alert('Picha hazijapakiwa: '+err.message+' Hakiki bucket na Storage policies.');return}
+ try{uploadedUrls=await uploadPropertyPhotos(photoFiles)}catch(err){btn.disabled=false;btn.textContent='Tuma tangazo kwa ukaguzi';alert('Picha hazijapakiwa: '+err.message+' Hakiki bucket na Storage policies.');return}
  if(photo&&!uploadedUrls.length)uploadedUrls=[photo];const firstPhoto=uploadedUrls[0]||null;
- const payload={title,region:'Dar es Salaam',area,property_type:type,monthly_rent:price,bedrooms:rooms,bathrooms:baths,phone,contact_phone:phone,description:desc,photo_url:firstPhoto,photo_urls:uploadedUrls,image_urls:uploadedUrls,owner_id:currentUser.id,status:'approved'};
+ const payload={title,region:'Dar es Salaam',area,property_type:type,monthly_rent:price,bedrooms:rooms,bathrooms:baths,phone,contact_phone:phone,description:desc,photo_url:firstPhoto,photo_urls:uploadedUrls,image_urls:uploadedUrls ,status:'pending'};
  const {error}=await supabaseClient.from('properties').insert(payload);btn.disabled=false;btn.textContent='Tuma tangazo kwa ukaguzi';
  if(error){alert('Picha zimepakiwa lakini tangazo halijahifadhiwa: '+error.message);return}
- closeModal();f.reset();document.getElementById('photoPreview').innerHTML='';await loadHomes();alert('Hongera! Tangazo na picha zake zimehifadhiwa. Zinaonekana kwa umma kwenye NYUMBA24.');
+ closeModal();f.reset();document.getElementById('photoPreview').innerHTML='';await loadHomes();alert('Hongera! Tangazo lako limepokelewa na litasubiri ukaguzi kabla ya kuonekana kwa umma kwenye NYUMBA24.');
 });
-(async()=>{if(supabaseClient){await refreshSession();await loadHomes()}else{render([]);setStatus('Weka Supabase Publishable Key kwenye config.js ili kuunganisha database.',true)}})();
+(async()=>{if(supabaseClient){await loadHomes()}else{render([]);setStatus('Weka Supabase Publishable Key kwenye config.js ili kuunganisha database.',true)}})();
 </script>
 </body></html>
